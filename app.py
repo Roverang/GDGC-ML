@@ -15,13 +15,18 @@ except FileNotFoundError:
 # Load feature lookup and create mapping
 try:
     lookup_df = pd.read_csv('feature_lookup.csv')
-    # Assuming the columns are 'feature_code' (f1, f2, etc.) and 'feature_name' (Age, Gender, etc.)
-    feature_map = lookup_df.set_index('feature_code')['feature_name'].to_dict()
+    
+    # *** CORRECTED LINE: Using 'relevance' as the descriptive name column ***
+    DESCRIPTIVE_NAME_COLUMN = 'relevance' 
+    
+    feature_map = lookup_df.set_index('feature_code')[DESCRIPTIVE_NAME_COLUMN].to_dict()
+    
 except FileNotFoundError:
     st.warning("Feature lookup file 'feature_lookup.csv' not found. Using generic feature codes.")
-    feature_map = {} # Empty map if file is missing, reverts to using f1, f2 names
+    feature_map = {}
 except KeyError:
-    st.error("Feature lookup CSV has incorrect column names. Expected 'feature_code' and 'feature_name'.")
+    # This block should no longer trigger with the correct column name
+    st.error(f"Feature lookup CSV is missing the required column '{DESCRIPTIVE_NAME_COLUMN}'. Please check your CSV file.")
     st.stop()
 
 
@@ -71,7 +76,6 @@ for i, feature_code in enumerate(categorical_features):
 if st.button("Predict Probability"):
     
     # 4a. Convert input to a DataFrame matching the structure the pipeline expects
-    # It is crucial the columns are in the correct order and use the feature codes (f1, f2, etc.)
     input_data = {
         col: [user_input[col]] for col in numeric_features + categorical_features
     }
