@@ -13,28 +13,16 @@ except FileNotFoundError:
     st.stop()
     
 # Load feature lookup and create mapping
-# Load feature lookup and create mapping
 try:
     lookup_df = pd.read_csv('feature_lookup.csv')
-    
-    # *** CORRECTION 1: Clean whitespace from the feature_code column ***
-    lookup_df['feature_code'] = lookup_df['feature_code'].str.strip()
-    
-    DESCRIPTIVE_NAME_COLUMN = 'relevance' 
-    
-    # *** CORRECTION 2: Check for the descriptive column before setting index ***
-    if DESCRIPTIVE_NAME_COLUMN not in lookup_df.columns:
-        st.error(f"Feature lookup CSV is missing the required column '{DESCRIPTIVE_NAME_COLUMN}'. Actual columns are: {lookup_df.columns.tolist()}")
-        st.stop()
-        
-    feature_map = lookup_df.set_index('feature_code')[DESCRIPTIVE_NAME_COLUMN].to_dict()
-    
+    # Map feature_code to relevance (the real descriptive name)
+    feature_map = lookup_df.set_index('feature_code')['relevance'].to_dict()
 except FileNotFoundError:
-    st.warning("Feature lookup file 'feature_lookup.csv' not found. Ensure it is in the same directory as app.py on GitHub.")
-    feature_map = {}
-except Exception as e:
-    st.error(f"An unexpected error occurred during feature lookup: {e}")
-    feature_map = {}
+    st.warning("Feature lookup file 'feature_lookup.csv' not found. Using generic feature codes.")
+    feature_map = {} # Empty map if file is missing, reverts to using f1, f2 names
+except KeyError:
+    st.error("Feature lookup CSV has incorrect column names. Expected 'feature_code' and 'relevance'.")
+    st.stop()
 
 
 # --- 2. Define Features using the structure from your notebook ---
@@ -107,4 +95,5 @@ if st.button("Predict Probability"):
     except Exception as e:
         st.error(f"An error occurred during prediction: {e}")
         st.info("Please check if the input values are correctly formatted.")
+
 
