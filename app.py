@@ -29,7 +29,7 @@ except KeyError:
 
 # These lists must match the columns expected by your model pipeline
 numeric_features = [
-    'f1', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f12', 
+    'F1', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f12', 
     'f13', 'f14', 'f15', 'f16', 'f18', 'f19', 'f20', 'f21', 'f22', 
     'f23', 'f24', 'f25', 'f26', 'f27', 'f28', 'f30', 'f31', 'f32'
 ]
@@ -95,5 +95,6 @@ if st.button("Predict Probability"):
     except Exception as e:
         st.error(f"An error occurred during prediction: {e}")
         st.info("Please check if the input values are correctly formatted.")
+
 
 
